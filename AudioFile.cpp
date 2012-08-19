@@ -19,7 +19,7 @@
 template <typename T, typename M>
 inline T extractTag(M &map, const char *key)
 {
-	T ret;
+	T ret = 0;
 	std::stringstream stream(extractTag<std::string>(map, key));
 	stream >> ret;
 	return ret;
