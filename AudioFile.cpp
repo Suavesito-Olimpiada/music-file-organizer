@@ -74,6 +74,10 @@ AudioFile::AudioFile(const std::string &filename) :
 	m_disc(0),
 	m_bpm(0),
 	m_year(0),
+	m_length(0),
+	m_bitrate(0),
+	m_sampleRate(0),
+	m_channels(0),
 	m_compilation(false)
 {
 	TagLib::FileRef fileRef(filename.c_str());
@@ -81,14 +85,21 @@ AudioFile::AudioFile(const std::string &filename) :
 		return;
 	
 	/* First we copy out everything TagLib actually supports. */
-	const TagLib::Tag *tag = fileRef.tag();
-	m_title = tag->title().to8Bit(true);
-	m_artist = tag->artist().to8Bit(true);
-	m_album = tag->album().to8Bit(true);
-	m_comment = tag->comment().to8Bit(true);
-	m_genre = tag->genre().to8Bit(true);
-	m_year = tag->year();
-	m_track = tag->track();
+	if (const TagLib::Tag *tag = fileRef.tag()) {
+		m_title = tag->title().to8Bit(true);
+		m_artist = tag->artist().to8Bit(true);
+		m_album = tag->album().to8Bit(true);
+		m_comment = tag->comment().to8Bit(true);
+		m_genre = tag->genre().to8Bit(true);
+		m_year = tag->year();
+		m_track = tag->track();
+	}
+	if (const TagLib::AudioProperties *audio = fileRef.audioProperties()) {
+		m_length = audio->length();
+		m_bitrate = audio->bitrate();
+		m_sampleRate = audio->sampleRate();
+		m_channels = audio->channels();
+	}
 
 	/* Now we look at format specific tags. */
 	if (TagLib::MPEG::File *file = dynamic_cast<TagLib::MPEG::File*>(fileRef.file())) {
@@ -182,6 +193,22 @@ unsigned int AudioFile::bpm() const
 unsigned int AudioFile::year() const
 {
 	return m_year;
+}
+unsigned int AudioFile::length() const
+{
+	return m_length;
+}
+unsigned int AudioFile::bitrate() const
+{
+	return m_bitrate;
+}
+unsigned int AudioFile::sampleRate() const
+{
+	return m_sampleRate;
+}
+unsigned int AudioFile::channels() const
+{
+	return m_channels;
 }
 bool AudioFile::compilation() const
 {

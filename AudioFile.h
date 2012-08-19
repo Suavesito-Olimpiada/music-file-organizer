@@ -18,6 +18,10 @@ public:
 	unsigned int disc() const;
 	unsigned int bpm() const;
 	unsigned int year() const;
+	unsigned int length() const;
+	unsigned int bitrate() const;
+	unsigned int sampleRate() const;
+	unsigned int channels() const;
 	bool compilation() const;
 
 private:
@@ -35,5 +39,9 @@ private:
 	unsigned int m_disc;
 	unsigned int m_bpm;
 	unsigned int m_year;
+	unsigned int m_length;
+	unsigned int m_bitrate;
+	unsigned int m_sampleRate;
+	unsigned int m_channels;
 	bool m_compilation;
 };

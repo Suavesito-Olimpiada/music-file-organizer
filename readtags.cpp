@@ -24,6 +24,10 @@ int main(int argc, char *argv[])
 		cout << "Disc:		" << f.disc() << endl;
 		cout << "Bpm:		" << f.bpm() << endl;
 		cout << "Year:		" << f.year() << endl;
+		cout << "Length:		" << f.length() << endl;
+		cout << "Bitrate:	" << f.bitrate() << endl;
+		cout << "Sample Rate:	" << f.sampleRate() << endl;
+		cout << "Channels:	" << f.channels() << endl;
 		cout << "Compilation:	" << f.compilation() << endl;
 		cout << endl;
 	}
