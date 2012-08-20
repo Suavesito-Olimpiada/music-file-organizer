@@ -4,29 +4,28 @@ class AudioFile
 {
 public:
 	AudioFile(const std::string &filename);
-	bool isValid() const;
-	
-	std::string filename() const;
-	std::string artist() const;
-	std::string composer() const;
-	std::string album() const;
-	std::string albumArtist() const;
-	std::string title() const;
-	std::string genre() const;
-	std::string comment() const;
-	unsigned int track() const;
-	unsigned int disc() const;
-	unsigned int bpm() const;
-	unsigned int year() const;
-	unsigned int length() const;
-	unsigned int bitrate() const;
-	unsigned int sampleRate() const;
-	unsigned int channels() const;
-	bool compilation() const;
+
+	inline bool isValid() const { return m_isValid; };
+	inline std::string filename() const { return m_filename; };
+	inline std::string artist() const { return m_artist; };
+	inline std::string composer() const { return m_composer; };
+	inline std::string album() const { return m_album; };
+	inline std::string albumArtist() const { return m_albumArtist; };
+	inline std::string title() const { return m_title; };
+	inline std::string genre() const { return m_genre; };
+	inline std::string comment() const { return m_comment; };
+	inline unsigned int track() const { return m_track; };
+	inline unsigned int disc() const { return m_disc; };
+	inline unsigned int bpm() const { return m_bpm; };
+	inline unsigned int year() const { return m_year; };
+	inline unsigned int length() const { return m_length; };
+	inline unsigned int bitrate() const { return m_bitrate; };
+	inline unsigned int sampleRate() const { return m_sampleRate; };
+	inline unsigned int channels() const { return m_channels; };
+	inline bool compilation() const { return m_compilation; };
 
 private:
 	bool m_isValid;
-
 	std::string m_filename;
 	std::string m_artist;
 	std::string m_composer;

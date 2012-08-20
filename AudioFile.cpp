@@ -16,6 +16,7 @@
 #include <mp4file.h>
 #include <mp4tag.h>
 
+/* Turn a string into an integer type for any map class. */
 template <typename T, typename M>
 inline T extractTag(M &map, const char *key)
 {
@@ -24,6 +25,7 @@ inline T extractTag(M &map, const char *key)
 	stream >> ret;
 	return ret;
 }
+/* Turn a string into a bool, based on "1" and "true", for any map class. */
 template <typename M>
 inline bool extractTag(M &map, const char *key)
 {
@@ -31,6 +33,7 @@ inline bool extractTag(M &map, const char *key)
 	std::transform(str.begin(), str.end(), str.begin(), ::tolower);
 	return (str == "1" || str == "true");
 }
+/* Extract a string out of an MP3 map. */
 template <>
 inline std::string extractTag(const TagLib::ID3v2::FrameListMap &map, const char *key)
 {
@@ -38,6 +41,7 @@ inline std::string extractTag(const TagLib::ID3v2::FrameListMap &map, const char
 		return std::string();
 	return map[key].front()->toString().to8Bit(true);
 }
+/* Extract a string out of an OGG map. */
 template <>
 inline std::string extractTag(const TagLib::Ogg::FieldListMap &map, const char *key)
 {
@@ -45,6 +49,7 @@ inline std::string extractTag(const TagLib::Ogg::FieldListMap &map, const char *
 		return std::string();
 	return map[key].front().to8Bit(true);
 }
+/* Extract an integer out of an MP4 map. */
 template <>
 inline unsigned int extractTag(const TagLib::MP4::ItemListMap &map, const char *key)
 {
@@ -52,6 +57,7 @@ inline unsigned int extractTag(const TagLib::MP4::ItemListMap &map, const char *
 		return 0;
 	return map[key].toInt();
 }
+/* Extract a string out of an MP4 map. */
 template <>
 inline std::string extractTag(const TagLib::MP4::ItemListMap &map, const char *key)
 {
@@ -59,6 +65,7 @@ inline std::string extractTag(const TagLib::MP4::ItemListMap &map, const char *k
 		return std::string();
 	return map[key].toStringList().toString().to8Bit(true);
 }
+/* Extract a bool out of an MP4 map. */
 template <>
 inline bool extractTag(const TagLib::MP4::ItemListMap &map, const char *key)
 {
@@ -93,11 +100,14 @@ AudioFile::AudioFile(const std::string &filename) :
 		m_genre = tag->genre().to8Bit(true);
 		m_year = tag->year();
 		m_track = tag->track();
+		/* Sometimes these integers are supposed to wrap,
+		 * and taglib doesn't know about it, so we do it manually. */
 		if (m_track == 4294967295)
 			m_track = 0;
 		if (m_year == 4294967295)
 			m_year = 0;
 	}
+	/* If there isn't a title, generate one from the basename sans-extension of the file. */
 	if (m_title.length() == 0) {
 		size_t pos;
 		m_title = filename;
@@ -108,6 +118,7 @@ AudioFile::AudioFile(const std::string &filename) :
 		if (pos != std::string::npos)
 			m_title.erase(pos);
 	}
+	/* TagLib also provides AudioProperties. */
 	if (const TagLib::AudioProperties *audio = fileRef.audioProperties()) {
 		m_length = audio->length();
 		m_bitrate = audio->bitrate();
@@ -115,7 +126,7 @@ AudioFile::AudioFile(const std::string &filename) :
 		m_channels = audio->channels();
 	}
 
-	/* Now we look at format specific tags. */
+	/* Now we look at format specific tags, attempting to upcast, and then extracting fields. */
 	if (TagLib::MPEG::File *file = dynamic_cast<TagLib::MPEG::File*>(fileRef.file())) {
 		if (file->ID3v2Tag()) {
 			const TagLib::ID3v2::FrameListMap &map = file->ID3v2Tag()->frameListMap();
@@ -154,77 +165,4 @@ AudioFile::AudioFile(const std::string &filename) :
 	}
 
 	m_isValid = true;
-}
-
-bool AudioFile::isValid() const
-{
-	return m_isValid;
-}
-std::string AudioFile::filename() const
-{
-	return m_filename;
-}
-std::string AudioFile::artist() const
-{
-	return m_artist;
-}
-std::string AudioFile::composer() const
-{
-	return m_composer;
-}
-std::string AudioFile::album() const
-{
-	return m_album;
-}
-std::string AudioFile::albumArtist() const
-{
-	return m_albumArtist;
-}
-std::string AudioFile::title() const
-{
-	return m_title;
-}
-std::string AudioFile::genre() const
-{
-	return m_genre;
-}
-std::string AudioFile::comment() const
-{
-	return m_comment;
-}
-unsigned int AudioFile::track() const
-{
-	return m_track;
-}
-unsigned int AudioFile::disc() const
-{
-	return m_disc;
-}
-unsigned int AudioFile::bpm() const
-{
-	return m_bpm;
-}
-unsigned int AudioFile::year() const
-{
-	return m_year;
-}
-unsigned int AudioFile::length() const
-{
-	return m_length;
-}
-unsigned int AudioFile::bitrate() const
-{
-	return m_bitrate;
-}
-unsigned int AudioFile::sampleRate() const
-{
-	return m_sampleRate;
-}
-unsigned int AudioFile::channels() const
-{
-	return m_channels;
-}
-bool AudioFile::compilation() const
-{
-	return m_compilation;
 }
