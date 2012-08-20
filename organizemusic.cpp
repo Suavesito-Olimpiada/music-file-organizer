@@ -32,17 +32,23 @@ using namespace std;
 static string base_destination;
 static Transliterator *transliterator;
 
+
+/* Recursive triangle. */
 void process_file(const char *filename, ino_t inode);
 void process_directory(const char *directory);
 void process_path(const char *path);
 
+/* Filesystem actions. */
+void rename_path(const string &source, const string &stem, ino_t inode);
+void make_parents(const string &filepath);
+
+/* String generators. */
 string generate_path(const AudioFile &audio);
 string truncated(const string &str, const string &ext);
 string transliterated(const string &str);
-void strip_slash(string &name);
+string strip_slash(const string &name);
 void disc_track(unsigned int disc, unsigned int track, ostringstream &path);
-void rename_path(const string &source, const string &stem, ino_t inode);
-void make_parents(const string &filepath);
+
 
 /* Converts forward slashes to hyphens. */
 string strip_slash(const string &name)
