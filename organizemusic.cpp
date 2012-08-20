@@ -285,7 +285,7 @@ int main(int argc, char *argv[])
 
 	/* Process all arguments to program as input paths. */
 	for (int i = 1; i < argc; ++i) {
-		size_t len = strlen(argv[i]);
+		len = strlen(argv[i]);
 		if (argv[i][len - 1] == '/')
 			argv[i][len - 1] = '\0';
 		process_path(argv[i]);
