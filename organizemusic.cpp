@@ -145,12 +145,6 @@ void rename_path(const string &source, const string &stem, ino_t inode)
 		perror(destination.c_str());
 		cerr << RESET;
 	}
-	pos = source.find_last_of('/');
-	if (pos != string::npos) {
-		string dirname = source.substr(0, pos);
-		if (!rmdir(dirname.c_str()))
-			cout << BLUE << "rmdir" << RESET << ": " << dirname << endl;
-	}
 }
 void make_parents(const string &filepath)
 {
@@ -192,6 +186,8 @@ void process_directory(const char *directory)
 		process_path(joined);
 	}
 	closedir(dir);
+	if (!rmdir(directory))
+		cout << BLUE << "rmdir" << RESET << ": " << directory << endl;
 }
 void process_path(const char *path)
 {
