@@ -31,4 +31,5 @@ int main(int argc, char *argv[])
 		cout << "Compilation:	" << f.compilation() << endl;
 		cout << endl;
 	}
+	return 0;
 }

@@ -94,6 +94,16 @@ AudioFile::AudioFile(const std::string &filename) :
 		m_year = tag->year();
 		m_track = tag->track();
 	}
+	if (m_title.length() == 0) {
+		size_t pos;
+		m_title = filename;
+		pos = m_title.find_last_of('/');
+		if (pos != std::string::npos)
+			m_title.erase(0, pos + 1);
+		pos = m_title.find_last_of('.');
+		if (pos != std::string::npos)
+			m_title.erase(pos);
+	}
 	if (const TagLib::AudioProperties *audio = fileRef.audioProperties()) {
 		m_length = audio->length();
 		m_bitrate = audio->bitrate();
