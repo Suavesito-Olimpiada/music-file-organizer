@@ -275,8 +275,8 @@ int main(int argc, char *argv[])
 			base_destination.append("/");
 	} else if (char *home = getenv("HOME")) {
 		len = strlen(home);
-		if (home[len - 1] == '/')
-			home[len - 1] = '\0';
+		while (home[len - 1] == '/')
+			home[--len] = '\0';
 		base_destination = string(home) + "/Music/";
 	} else {
 		cerr << RED << "Fatal: Could not determine the music directory. Try setting the MUSICDIR or HOME environment variable." << RESET << endl;
@@ -286,8 +286,8 @@ int main(int argc, char *argv[])
 	/* Process all arguments to program as input paths. */
 	for (int i = 1; i < argc; ++i) {
 		len = strlen(argv[i]);
-		if (argv[i][len - 1] == '/')
-			argv[i][len - 1] = '\0';
+		while (argv[i][len - 1] == '/')
+			argv[i][--len] = '\0';
 		process_path(argv[i]);
 	}
 	
