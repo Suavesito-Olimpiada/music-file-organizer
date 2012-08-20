@@ -1,6 +1,7 @@
 #include "AudioFile.h"
 
 #include <iostream>
+#include <iomanip>
 
 using namespace std;
 
@@ -12,24 +13,25 @@ int main(int argc, char *argv[])
 			cout << argv[i] << " is not valid." << endl;
 			continue;
 		}
-		cout << "Filename:	" << f.filename() << endl;
-		cout << "Artist:		" << f.artist() << endl;
-		cout << "Composer:	" << f.composer() << endl;
-		cout << "Album:		" << f.album() << endl;
-		cout << "Album Artist:	" << f.albumArtist() << endl;
-		cout << "Title:		" << f.title() << endl;
-		cout << "Genre:		" << f.genre() << endl;
-		cout << "Comment:	" << f.comment() << endl;
-		cout << "Track:		" << f.track() << endl;
-		cout << "Disc:		" << f.disc() << endl;
-		cout << "Bpm:		" << f.bpm() << endl;
-		cout << "Year:		" << f.year() << endl;
-		cout << "Length:		" << f.length() << endl;
-		cout << "Bitrate:	" << f.bitrate() << endl;
-		cout << "Sample Rate:	" << f.sampleRate() << endl;
-		cout << "Channels:	" << f.channels() << endl;
-		cout << "Compilation:	" << f.compilation() << endl;
-		cout << endl;
+		cout << setw(14) << "Filename: " << setw(0) << f.filename() << endl;
+		cout << setw(14) << "Artist: " << setw(0) << f.artist() << endl;
+		cout << setw(14) << "Composer: " << setw(0) << f.composer() << endl;
+		cout << setw(14) << "Album: " << setw(0) << f.album() << endl;
+		cout << setw(14) << "Album Artist: " << setw(0) << f.albumArtist() << endl;
+		cout << setw(14) << "Title: " << setw(0) << f.title() << endl;
+		cout << setw(14) << "Genre: " << setw(0) << f.genre() << endl;
+		cout << setw(14) << "Comment: " << setw(0) << f.comment() << endl;
+		cout << setw(14) << "Track: " << setw(0) << f.track() << endl;
+		cout << setw(14) << "Disc: " << setw(0) << f.disc() << endl;
+		cout << setw(14) << "Bpm: " << setw(0) << f.bpm() << endl;
+		cout << setw(14) << "Year: " << setw(0) << f.year() << endl;
+		cout << setw(14) << "Length: " << setw(0) << f.length() << endl;
+		cout << setw(14) << "Bitrate: " << setw(0) << f.bitrate() << endl;
+		cout << setw(14) << "Sample Rate: " << setw(0) << f.sampleRate() << endl;
+		cout << setw(14) << "Channels: " << setw(0) << f.channels() << endl;
+		cout << setw(14) << "Compilation: " << setw(0) << f.compilation() << endl;
+		if (i != argc - 1)
+			cout << endl;
 	}
 	return 0;
 }
