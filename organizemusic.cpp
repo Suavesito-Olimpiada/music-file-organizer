@@ -27,7 +27,7 @@ using namespace std;
 #define CYAN    "\x1b[36m"
 #define RESET   "\x1b[0m"
 
-static string base_destination = "/home/zx2c4/Music/";
+static string base_destination;
 static Transliterator *transliterator;
 
 void process_file(const char *filename, ino_t inode);
@@ -208,10 +208,25 @@ void process_path(const char *path)
 
 int main(int argc, char *argv[])
 {
+	size_t len;
 	UErrorCode status = U_ZERO_ERROR;
 	transliterator = Transliterator::createInstance("Latin; NFD; [:Nonspacing Mark:] Remove; NFC; [:^ASCII:] Remove; [\\:;*?\"<>|\\\\] Remove", UTRANS_FORWARD, status);
 	if (!transliterator || status != U_ZERO_ERROR) {
 		cerr << RED << "Fatal: Could not initialize transliterator." << RESET << endl;
+		return EXIT_FAILURE;
+	}
+
+	if (char *base = getenv("MUSICDIR")) {
+		base_destination = base;
+		if (base_destination[base_destination.length() - 1] != '/')
+			base_destination.append("/");
+	} else if (char *home = getenv("HOME")) {
+		len = strlen(home);
+		if (home[len - 1] == '/')
+			home[len - 1] = '\0';
+		base_destination = string(home) + "/Music/";
+	} else {
+		cerr << RED << "Fatal: Could not determine the music directory. Try setting the MUSICDIR or HOME environment variable." << RESET << endl;
 		return EXIT_FAILURE;
 	}
 
