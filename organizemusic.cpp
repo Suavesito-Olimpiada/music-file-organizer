@@ -1,8 +1,5 @@
 #include "AudioFile.h"
 
-#include <unicode/translit.h>
-#include <unicode/unistr.h>
-
 #include <iostream>
 #include <iomanip>
 #include <sstream>
@@ -16,6 +13,9 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <dirent.h>
+
+#include <unicode/translit.h>
+#include <unicode/unistr.h>
 
 using namespace std;
 
