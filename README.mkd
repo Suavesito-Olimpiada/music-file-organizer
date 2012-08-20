@@ -5,11 +5,13 @@ This project ships two very simple utilities for organizing music files.
 
 ### `organizemusic`
 This scans recursively all directories and files given as arguments and determines the tags of the audio files. It uses these tags to generate a file name and directory sstructure, normalizes the name to remove non ASCII characters, and then moves the files to their new location inside `$MUSICDIR` or `$HOME/Music`.
+
 ``$ organizemusic ~/Downloads/Some-Torrent-Directory/ ~/Desktop/file-from-friend.mp3``
 
 
 ### `readmusictags`
 This spits out all the tag data inside the music files given as arguments.
+
 ``$ readmusictags ~/some-music-file.flac ~/files/another_music-file.wma``
 
 Build Requirements
