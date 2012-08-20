@@ -19,6 +19,14 @@
 
 using namespace std;
 
+#define RED     "\x1b[31m"
+#define GREEN   "\x1b[32m"
+#define YELLOW  "\x1b[33m"
+#define BLUE    "\x1b[34m"
+#define MAGENTA "\x1b[35m"
+#define CYAN    "\x1b[36m"
+#define RESET   "\x1b[0m"
+
 static string base_destination = "/home/zx2c4/Music/";
 static Transliterator *transliterator;
 
@@ -29,9 +37,10 @@ void process_path(const char *path);
 string generate_path(const AudioFile &audio);
 string truncated(const string &str, const string &ext);
 string transliterated(const string &str);
-void rename_path(const string &source, const string &stem, ino_t inode);
 void strip_slash(string &name);
 void disc_track(unsigned int disc, unsigned int track, ostringstream &path);
+void rename_path(const string &source, const string &stem, ino_t inode);
+void make_parents(const string &filepath);
 
 string strip_slash(const string &name)
 {
@@ -103,10 +112,10 @@ string transliterated(const string &str)
 }
 void rename_path(const string &source, const string &stem, ino_t inode)
 {
-	size_t lastdot = source.find_last_of('.');
+	size_t pos = source.find_last_of('.');
 	string ext;
-	if (lastdot != string::npos) {
-		ext = source.substr(lastdot);
+	if (pos != string::npos) {
+		ext = source.substr(pos);
 		transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
 	}
 	string destination = truncated(base_destination + stem, ext);
@@ -127,13 +136,43 @@ void rename_path(const string &source, const string &stem, ino_t inode)
 		if (counter == 0)
 			return;
 	}
-	cout << source << endl << "\t-> " << destination << endl;
+
+	make_parents(destination);
+	if (!rename(source.c_str(), destination.c_str()))
+		cout << CYAN << "move" << RESET << ": " << YELLOW << source << RESET << " ==> " << GREEN << destination << RESET << endl;
+	else {
+		cerr << RED;
+		perror(destination.c_str());
+		cerr << RESET;
+	}
+	pos = source.find_last_of('/');
+	if (pos != string::npos) {
+		string dirname = source.substr(0, pos);
+		if (!rmdir(dirname.c_str()))
+			cout << BLUE << "rmdir" << RESET << ": " << dirname << endl;
+	}
+}
+void make_parents(const string &filepath)
+{
+	string path;
+	size_t current, next = -1;
+	for (;;) {
+		current = next + 1;
+		if ((next = filepath.find_first_of('/', current)) == string::npos)
+			return;
+
+		path.append(filepath.substr(current, next - current));
+		path.append("/");
+
+		if (!mkdir(path.c_str(), 0755))
+			cout << MAGENTA << "mkdir" << RESET << ": " << path.c_str() << endl;
+	}
 }
 void process_file(const char *filename, ino_t inode)
 {
 	AudioFile audio(filename);
 	if (!audio.isValid()) {
-		cerr << filename << ": not a valid audio file" << endl;
+		cerr << RED << filename << ": not a valid audio file" << RESET << endl;
 		return;
 	}
 	rename_path(filename, generate_path(audio), inode);
@@ -158,7 +197,9 @@ void process_path(const char *path)
 {
 	struct stat sbuf;
 	if (stat(path, &sbuf)) {
+		cerr << RED;
 		perror(path);
+		cerr << RESET;
 		return;
 	}
 	if (S_ISREG(sbuf.st_mode))
@@ -166,7 +207,7 @@ void process_path(const char *path)
 	else if (S_ISDIR(sbuf.st_mode))
 		process_directory(path);
 	else
-		cerr << path << ": not a file nor a directory" << endl;
+		cerr << RED << path << ": not a file nor a directory" << RESET << endl;
 }
 
 int main(int argc, char *argv[])
@@ -174,7 +215,7 @@ int main(int argc, char *argv[])
 	UErrorCode status = U_ZERO_ERROR;
 	transliterator = Transliterator::createInstance("Latin; NFD; [:Nonspacing Mark:] Remove; NFC; [:^ASCII:] Remove; [\\:;*?\"<>|\\\\] Remove", UTRANS_FORWARD, status);
 	if (!transliterator || status != U_ZERO_ERROR) {
-		cerr << "Fatal: Could not initialize transliterator." << endl;
+		cerr << RED << "Fatal: Could not initialize transliterator." << RESET << endl;
 		return EXIT_FAILURE;
 	}
 

@@ -93,6 +93,10 @@ AudioFile::AudioFile(const std::string &filename) :
 		m_genre = tag->genre().to8Bit(true);
 		m_year = tag->year();
 		m_track = tag->track();
+		if (m_track == 4294967295)
+			m_track = 0;
+		if (m_year == 4294967295)
+			m_year = 0;
 	}
 	if (m_title.length() == 0) {
 		size_t pos;
