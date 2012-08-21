@@ -132,7 +132,7 @@ string transliterated(const string &str)
 	UnicodeString in(str.c_str(), "UTF-8");
 	transliterator->transliterate(in);
 	char out[in.length() + 1];
-	out[in.extract(0, in.length(), out, in.length(), "ASCII")] = '\0';
+	in.extract(0, in.length(), out, in.length() + 1, "ASCII");
 	return out;
 }
 
@@ -290,6 +290,8 @@ int main(int argc, char *argv[])
 			argv[i][--len] = '\0';
 		process_path(argv[i]);
 	}
+
+	delete transliterator;
 	
 	return 0;
 }
