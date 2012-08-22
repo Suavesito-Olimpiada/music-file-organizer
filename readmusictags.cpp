@@ -22,7 +22,7 @@ int main(int argc, char *argv[])
 		cout << setw(14) << "Genre: " << setw(0) << f.genre() << endl;
 		cout << setw(14) << "Comment: " << setw(0) << f.comment() << endl;
 		cout << setw(14) << "Track: " << setw(0) << f.track() << endl;
-		cout << setw(14) << "Disc: " << setw(0) << f.disc() << endl;
+		cout << setw(14) << "Disc: " << setw(0) << f.disc() << '/' << f.discTotal() << endl;
 		cout << setw(14) << "Bpm: " << setw(0) << f.bpm() << endl;
 		cout << setw(14) << "Year: " << setw(0) << f.year() << endl;
 		cout << setw(14) << "Length: " << setw(0) << f.length() << endl;

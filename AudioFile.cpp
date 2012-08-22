@@ -21,9 +21,24 @@ template <typename T, typename M>
 inline T extractTag(M &map, const char *key)
 {
 	T ret = 0;
-	std::stringstream stream(extractTag<std::string>(map, key));
+	std::istringstream stream(extractTag<std::string>(map, key));
 	stream >> ret;
 	return ret;
+}
+/* Turn a string into a pair of integer types separated by a slash
+ * for any map class. */
+template <typename T1, typename T2, typename M>
+inline std::pair<T1, T2> extractTag(M &map, const char *key)
+{
+	std::pair<T1, T2> values;
+	values.first = 0;
+	values.second = 0;
+	char slash = '\0';
+	std::istringstream stream(extractTag<std::string>(map, key));
+	stream >> values.first >> slash >> values.second;
+	if (slash != '/')
+		values.second = 0;
+	return values;
 }
 /* Turn a string into a bool, based on "1" and "true", for any map class. */
 template <typename M>
@@ -48,6 +63,15 @@ inline std::string extractTag(const TagLib::Ogg::FieldListMap &map, const char *
 	if (map[key].isEmpty())
 		return std::string();
 	return map[key].front().to8Bit(true);
+}
+/* Extract an integer pair out of an MP4 map. */
+template <typename T1, typename T2>
+inline std::pair<T1, T2> extractTag(const TagLib::MP4::ItemListMap &map, const char *key)
+{
+	if (!map[key].isValid())
+		return std::pair<T1, T2>(0, 0);
+	TagLib::MP4::Item::IntPair pair = map[key].toIntPair();
+	return std::pair<T1, T2>(pair.first, pair.second);
 }
 /* Extract an integer out of an MP4 map. */
 template <>
@@ -79,6 +103,7 @@ AudioFile::AudioFile(const std::string &filename) :
 	m_filename(filename),
 	m_track(0),
 	m_disc(0),
+	m_discTotal(0),
 	m_bpm(0),
 	m_year(0),
 	m_length(0),
@@ -130,6 +155,9 @@ AudioFile::AudioFile(const std::string &filename) :
 	if (TagLib::MPEG::File *file = dynamic_cast<TagLib::MPEG::File*>(fileRef.file())) {
 		if (file->ID3v2Tag()) {
 			const TagLib::ID3v2::FrameListMap &map = file->ID3v2Tag()->frameListMap();
+			std::pair<unsigned int, unsigned int> discPair = extractTag<unsigned int, unsigned int>(map, "TPOS");
+			m_disc = discPair.first;
+			m_discTotal = discPair.second;
 			m_disc = extractTag<unsigned int>(map, "TPOS");
 			m_bpm = extractTag<unsigned int>(map, "TBPM");
 			m_composer = extractTag<std::string>(map, "TCOM");
@@ -141,6 +169,7 @@ AudioFile::AudioFile(const std::string &filename) :
 		if (file->tag()) {
 			const TagLib::Ogg::FieldListMap &map = file->tag()->fieldListMap();
 			m_disc = extractTag<unsigned int>(map, "DISCNUMBER");
+			m_discTotal = extractTag<unsigned int>(map, "DISCTOTAL");
 			m_bpm = extractTag<unsigned int>(map, "BPM");
 			m_composer = extractTag<std::string>(map, "COMPOSER");
 			m_compilation = extractTag<bool>(map, "COMPILATION");
@@ -149,6 +178,7 @@ AudioFile::AudioFile(const std::string &filename) :
 		if (file->xiphComment()) {
 			const TagLib::Ogg::FieldListMap &map = file->xiphComment()->fieldListMap();
 			m_disc = extractTag<unsigned int>(map, "DISCNUMBER");
+			m_discTotal = extractTag<unsigned int>(map, "DISCTOTAL");
 			m_bpm = extractTag<unsigned int>(map, "BPM");
 			m_composer = extractTag<std::string>(map, "COMPOSER");
 			m_compilation = extractTag<bool>(map, "COMPILATION");
@@ -156,7 +186,9 @@ AudioFile::AudioFile(const std::string &filename) :
 	} else if (TagLib::MP4::File *file = dynamic_cast<TagLib::MP4::File*>(fileRef.file())) {
 		if (file->tag()) {
 			const TagLib::MP4::ItemListMap &map = file->tag()->itemListMap();
-			m_disc = extractTag<unsigned int>(map, "disk");
+			std::pair<unsigned int, unsigned int> discPair = extractTag<unsigned int, unsigned int>(map, "disk");
+			m_disc = discPair.first;
+			m_discTotal = discPair.second;
 			m_bpm = extractTag<unsigned int>(map, "tmpo");
 			m_albumArtist = extractTag<std::string>(map, "aART");
 			m_composer = extractTag<std::string>(map, "\xa9wrt");

@@ -16,6 +16,7 @@ public:
 	inline std::string comment() const { return m_comment; };
 	inline unsigned int track() const { return m_track; };
 	inline unsigned int disc() const { return m_disc; };
+	inline unsigned int discTotal() const { return m_discTotal; };
 	inline unsigned int bpm() const { return m_bpm; };
 	inline unsigned int year() const { return m_year; };
 	inline unsigned int length() const { return m_length; };
@@ -38,6 +39,7 @@ private:
 	std::string m_comment;
 	unsigned int m_track;
 	unsigned int m_disc;
+	unsigned int m_discTotal;
 	unsigned int m_bpm;
 	unsigned int m_year;
 	unsigned int m_length;

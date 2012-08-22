@@ -59,9 +59,9 @@ string strip_slash(const string &name)
 }
 
 /* {disc}-{0-padded track}{space} with reasonable fallbacks. */
-void disc_track(unsigned int disc, unsigned int track, ostringstream &path)
+void disc_track(unsigned int disc, unsigned int discTotal, unsigned int track, ostringstream &path)
 {
-	if (disc > 0) {
+	if (discTotal != 1 && disc > 0) {
 		path << disc;
 		if (track > 0)
 			path << '-';
@@ -86,7 +86,7 @@ string generate_path(const AudioFile &audio)
 			path << "Unknown Album/";
 		else
 			path << strip_slash(audio.album()) << '/';
-		disc_track(audio.disc(), audio.track(), path);
+		disc_track(audio.disc(), audio.discTotal(), audio.track(), path);
 		if (audio.artist().length() > 0)
 			path << strip_slash(audio.artist()) << " - ";
 		path << strip_slash(audio.title());
@@ -97,7 +97,7 @@ string generate_path(const AudioFile &audio)
 			path << strip_slash(audio.artist()) << '/';
 		if (audio.album().length() > 0)
 			path << strip_slash(audio.album()) << '/';
-		disc_track(audio.disc(), audio.track(), path);
+		disc_track(audio.disc(), audio.discTotal(), audio.track(), path);
 		path << strip_slash(audio.title());
 	}
 	return transliterated(path.str());
