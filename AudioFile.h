@@ -24,6 +24,8 @@ public:
 	inline unsigned int channels() const { return m_channels; };
 	inline bool compilation() const { return m_compilation; };
 
+	bool operator<(const AudioFile &other) const;
+
 private:
 	bool m_isValid;
 	std::string m_filename;

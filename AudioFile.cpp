@@ -166,3 +166,16 @@ AudioFile::AudioFile(const std::string &filename) :
 
 	m_isValid = true;
 }
+bool AudioFile::operator<(const AudioFile &other) const
+{
+	int comp;
+	if (comp = m_artist.compare(other.m_artist))
+		return comp < 0;
+	if (m_year != other.m_year)
+		return m_year < other.m_year;
+	if (comp = m_album.compare(other.m_album))
+		return comp < 0;
+	if (m_track != other.m_track)
+		return m_track < other.m_track;
+	return m_title.compare(other.m_title) < 0;
+}
