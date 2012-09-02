@@ -136,6 +136,14 @@ string transliterated(const string &str)
 	return out;
 }
 
+/* Replaces the base destination path with a musical note for pretty display. */
+string prettify_destination(const string &str)
+{
+	if (str.find(base_destination) == string::npos)
+		return str;
+	return "\xe2\x99\xab/" + str.substr(base_destination.length());
+}
+
 /* 1. Determine the extension of the source file and convert it to lower case.
  * 2. Form destination file name from base destination, generated stem, and extension.
  * 3. If the destination file does not exist, great. Otherwise, see if it exists.
@@ -173,10 +181,10 @@ void rename_path(const string &source, const string &stem, ino_t inode)
 
 	make_parents(destination);
 	if (!rename(source.c_str(), destination.c_str()))
-		cout << CYAN << "move" << RESET << ": " << YELLOW << source << RESET << " ==> " << GREEN << destination << RESET << endl;
+		cout << CYAN << "move" << RESET << ": " << YELLOW << prettify_destination(source) << RESET << " \xe2\x86\x92 " << GREEN << prettify_destination(destination) << RESET << endl;
 	else {
 		cerr << RED;
-		perror(destination.c_str());
+		perror(prettify_destination(destination).c_str());
 		cerr << RESET;
 	}
 }
@@ -196,7 +204,7 @@ void make_parents(const string &filepath)
 		path.append("/");
 
 		if (!mkdir(path.c_str(), 0755))
-			cout << MAGENTA << "mkdir" << RESET << ": " << path.c_str() << endl;
+			cout << MAGENTA << "mkdir" << RESET << ": " << prettify_destination(path) << endl;
 	}
 }
 
@@ -205,7 +213,7 @@ void process_file(const char *filename, ino_t inode)
 {
 	AudioFile audio(filename);
 	if (!audio.isValid()) {
-		cerr << RED << filename << ": not a valid audio file" << RESET << endl;
+		cerr << RED << prettify_destination(filename) << ": not a valid audio file" << RESET << endl;
 		return;
 	}
 	rename_path(filename, generate_path(audio), inode);
@@ -229,7 +237,7 @@ void process_directory(const char *directory)
 	}
 	closedir(dir);
 	if (!rmdir(directory))
-		cout << BLUE << "rmdir" << RESET << ": " << directory << endl;
+		cout << BLUE << "rmdir" << RESET << ": " << prettify_destination(directory) << endl;
 }
 
 /* Process files as files, directories as directories, and skip everything else. */
@@ -238,7 +246,7 @@ void process_path(const char *path)
 	struct stat sbuf;
 	if (stat(path, &sbuf)) {
 		cerr << RED;
-		perror(path);
+		perror(prettify_destination(path).c_str());
 		cerr << RESET;
 		return;
 	}
@@ -247,7 +255,7 @@ void process_path(const char *path)
 	else if (S_ISDIR(sbuf.st_mode))
 		process_directory(path);
 	else
-		cerr << RED << path << ": not a file nor a directory" << RESET << endl;
+		cerr << RED << prettify_destination(path) << ": not a file nor a directory" << RESET << endl;
 }
 
 int main(int argc, char *argv[])
@@ -282,6 +290,7 @@ int main(int argc, char *argv[])
 		cerr << RED << "Fatal: Could not determine the music directory. Try setting the MUSICDIR or HOME environment variable." << RESET << endl;
 		return EXIT_FAILURE;
 	}
+	cout << GREEN << "\xe2\x99\xab" << RESET << ": " << base_destination << endl;
 
 	/* Process all arguments to program as input paths. */
 	for (int i = 1; i < argc; ++i) {
