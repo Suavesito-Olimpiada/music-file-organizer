@@ -2,7 +2,7 @@ PREFIX ?= /usr
 DESTDIR ?=
 BINDIR ?= $(PREFIX)/bin
 
-LDFLAGS += $(shell pkg-config --libs taglib icu-i18n)
+LDFLAGS := $(shell pkg-config --libs taglib icu-i18n) $(LDFLAGS)
 CXXFLAGS ?= -O3 -pipe -fomit-frame-pointer -march=native
 CXXFLAGS += $(shell pkg-config --cflags taglib icu-i18n)
 
