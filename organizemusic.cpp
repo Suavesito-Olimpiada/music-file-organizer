@@ -11,7 +11,10 @@
 
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/sendfile.h>
+
 #include <unistd.h>
+#include <fcntl.h>
 #include <dirent.h>
 
 #include <unicode/translit.h>
@@ -151,7 +154,8 @@ string prettify_destination(const string &str)
  *    Otherwise, tag on a counter number and see if that file exists, etc.
  * 5. If we exhaust all possible counters and wrap around to 0, give up.
  * 6. After establishing a non-existing file name destination, make parent directories,
- *    then attempt to rename the source to the destination. */
+ *    then attempt to rename the source to the destination.
+ * 7. If we're crossing file system barriers, copy and delete using sendfile. */
 void rename_path(const string &source, const string &stem, ino_t inode)
 {
 	size_t pos = source.find_last_of('.');
@@ -182,11 +186,27 @@ void rename_path(const string &source, const string &stem, ino_t inode)
 	make_parents(destination);
 	if (!rename(source.c_str(), destination.c_str()))
 		cout << CYAN << "move" << RESET << ": " << YELLOW << prettify_destination(source) << RESET << " \xe2\x86\x92 " << GREEN << prettify_destination(destination) << RESET << endl;
-	else {
-		cerr << RED;
-		perror(prettify_destination(destination).c_str());
-		cerr << RESET;
-	}
+	else if (errno == EXDEV) {
+		int source_fd = open(source.c_str(), O_RDONLY, 0);
+		int destination_fd = open(destination.c_str(), O_WRONLY | O_CREAT, 0644);
+		struct stat source_stat;
+		if (fstat(source_fd, &source_stat))
+			goto error;
+		if (sendfile(destination_fd, source_fd, 0, source_stat.st_size) < 0)
+			goto error;
+		close(source_fd);
+		close(destination_fd);
+		if (unlink(source.c_str()))
+			goto error;
+		cout << CYAN << "copy & delete" << RESET << ": " << YELLOW << prettify_destination(source) << RESET << " \xe2\x86\x92 " << GREEN << prettify_destination(destination) << RESET << endl;
+	} else
+		goto error;
+	return;
+
+error:
+	cerr << RED;
+	perror(prettify_destination(destination).c_str());
+	cerr << RESET;
 }
 
 /* Break a file path down into components and try to mkdir for each component,
