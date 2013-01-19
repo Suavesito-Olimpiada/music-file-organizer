@@ -40,29 +40,37 @@ inline std::pair<T1, T2> extractTag(const M &map, const char *key)
 		values.second = 0;
 	return values;
 }
-/* Turn a string into a bool, based on "1" and "true", for any map class. */
-template <typename M>
-inline bool extractTag(const M &map, const char *key)
-{
-	std::string str(extractTag<std::string>(map, key));
-	std::transform(str.begin(), str.end(), str.begin(), ::tolower);
-	return (str == "1" || str == "true");
-}
 /* Extract a string out of an MP3 map. */
 template <>
-inline std::string extractTag(const TagLib::ID3v2::FrameListMap &map, const char *key)
+inline std::string extractTag<std::string, TagLib::ID3v2::FrameListMap>(const TagLib::ID3v2::FrameListMap &map, const char *key)
 {
 	if (map[key].isEmpty())
 		return std::string();
 	return map[key].front()->toString().to8Bit(true);
 }
+/* Turn a string into a bool, based on "1" and "true", for MP3. */
+template <>
+inline bool extractTag<bool, TagLib::ID3v2::FrameListMap>(const TagLib::ID3v2::FrameListMap &map, const char *key)
+{
+	std::string str(extractTag<std::string>(map, key));
+	std::transform(str.begin(), str.end(), str.begin(), ::tolower);
+	return (str == "1" || str == "true");
+}
 /* Extract a string out of an OGG map. */
 template <>
-inline std::string extractTag(const TagLib::Ogg::FieldListMap &map, const char *key)
+inline std::string extractTag<std::string, TagLib::Ogg::FieldListMap>(const TagLib::Ogg::FieldListMap &map, const char *key)
 {
 	if (map[key].isEmpty())
 		return std::string();
 	return map[key].front().to8Bit(true);
+}
+/* Turn a string into a bool, based on "1" and "true", for OGG. */
+template <>
+inline bool extractTag<bool, TagLib::Ogg::FieldListMap>(const TagLib::Ogg::FieldListMap &map, const char *key)
+{
+	std::string str(extractTag<std::string>(map, key));
+	std::transform(str.begin(), str.end(), str.begin(), ::tolower);
+	return (str == "1" || str == "true");
 }
 /* Extract an integer pair out of an MP4 map. */
 template <typename T1, typename T2>
@@ -75,7 +83,7 @@ inline std::pair<T1, T2> extractTag(const TagLib::MP4::ItemListMap &map, const c
 }
 /* Extract an integer out of an MP4 map. */
 template <>
-inline unsigned int extractTag(const TagLib::MP4::ItemListMap &map, const char *key)
+inline unsigned int extractTag<unsigned int, TagLib::MP4::ItemListMap>(const TagLib::MP4::ItemListMap &map, const char *key)
 {
 	if (!map[key].isValid())
 		return 0;
@@ -83,7 +91,7 @@ inline unsigned int extractTag(const TagLib::MP4::ItemListMap &map, const char *
 }
 /* Extract a string out of an MP4 map. */
 template <>
-inline std::string extractTag(const TagLib::MP4::ItemListMap &map, const char *key)
+inline std::string extractTag<std::string, TagLib::MP4::ItemListMap>(const TagLib::MP4::ItemListMap &map, const char *key)
 {
 	if (!map[key].isValid())
 		return std::string();
@@ -91,7 +99,7 @@ inline std::string extractTag(const TagLib::MP4::ItemListMap &map, const char *k
 }
 /* Extract a bool out of an MP4 map. */
 template <>
-inline bool extractTag(const TagLib::MP4::ItemListMap &map, const char *key)
+inline bool extractTag<bool, TagLib::MP4::ItemListMap>(const TagLib::MP4::ItemListMap &map, const char *key)
 {
 	if (!map[key].isValid())
 		return false;
