@@ -18,7 +18,7 @@
 
 /* Turn a string into an integer type for any map class. */
 template <typename T, typename M>
-inline T extractTag(M &map, const char *key)
+inline T extractTag(const M &map, const char *key)
 {
 	T ret = 0;
 	std::istringstream stream(extractTag<std::string>(map, key));
@@ -28,7 +28,7 @@ inline T extractTag(M &map, const char *key)
 /* Turn a string into a pair of integer types separated by a slash
  * for any map class. */
 template <typename T1, typename T2, typename M>
-inline std::pair<T1, T2> extractTag(M &map, const char *key)
+inline std::pair<T1, T2> extractTag(const M &map, const char *key)
 {
 	std::pair<T1, T2> values;
 	values.first = 0;
@@ -42,7 +42,7 @@ inline std::pair<T1, T2> extractTag(M &map, const char *key)
 }
 /* Turn a string into a bool, based on "1" and "true", for any map class. */
 template <typename M>
-inline bool extractTag(M &map, const char *key)
+inline bool extractTag(const M &map, const char *key)
 {
 	std::string str(extractTag<std::string>(map, key));
 	std::transform(str.begin(), str.end(), str.begin(), ::tolower);
