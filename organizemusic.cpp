@@ -21,6 +21,7 @@
 #include <unicode/unistr.h>
 
 using namespace std;
+using namespace icu;
 
 /* TODO: we could benefit from having these dynamic, and making them
  * no-ops when the output isn't an xterm. */
