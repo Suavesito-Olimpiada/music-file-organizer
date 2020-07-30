@@ -74,7 +74,7 @@ inline bool extractTag<bool, TagLib::Ogg::FieldListMap>(const TagLib::Ogg::Field
 }
 /* Extract an integer pair out of an MP4 map. */
 template <typename T1, typename T2>
-inline std::pair<T1, T2> extractTag(const TagLib::MP4::ItemListMap &map, const char *key)
+inline std::pair<T1, T2> extractTag(const TagLib::MP4::ItemMap &map, const char *key)
 {
 	if (!map[key].isValid())
 		return std::pair<T1, T2>(0, 0);
@@ -83,7 +83,7 @@ inline std::pair<T1, T2> extractTag(const TagLib::MP4::ItemListMap &map, const c
 }
 /* Extract an integer out of an MP4 map. */
 template <>
-inline unsigned int extractTag<unsigned int, TagLib::MP4::ItemListMap>(const TagLib::MP4::ItemListMap &map, const char *key)
+inline unsigned int extractTag<unsigned int, TagLib::MP4::ItemMap>(const TagLib::MP4::ItemMap &map, const char *key)
 {
 	if (!map[key].isValid())
 		return 0;
@@ -91,7 +91,7 @@ inline unsigned int extractTag<unsigned int, TagLib::MP4::ItemListMap>(const Tag
 }
 /* Extract a string out of an MP4 map. */
 template <>
-inline std::string extractTag<std::string, TagLib::MP4::ItemListMap>(const TagLib::MP4::ItemListMap &map, const char *key)
+inline std::string extractTag<std::string, TagLib::MP4::ItemMap>(const TagLib::MP4::ItemMap &map, const char *key)
 {
 	if (!map[key].isValid())
 		return std::string();
@@ -99,7 +99,7 @@ inline std::string extractTag<std::string, TagLib::MP4::ItemListMap>(const TagLi
 }
 /* Extract a bool out of an MP4 map. */
 template <>
-inline bool extractTag<bool, TagLib::MP4::ItemListMap>(const TagLib::MP4::ItemListMap &map, const char *key)
+inline bool extractTag<bool, TagLib::MP4::ItemMap>(const TagLib::MP4::ItemMap &map, const char *key)
 {
 	if (!map[key].isValid())
 		return false;
@@ -193,7 +193,7 @@ AudioFile::AudioFile(const std::string &filename) :
 		}
 	} else if (TagLib::MP4::File *file = dynamic_cast<TagLib::MP4::File*>(fileRef.file())) {
 		if (file->tag()) {
-			const TagLib::MP4::ItemListMap &map = file->tag()->itemListMap();
+			const TagLib::MP4::ItemMap &map = file->tag()->itemMap();
 			std::pair<unsigned int, unsigned int> discPair = extractTag<unsigned int, unsigned int>(map, "disk");
 			m_disc = discPair.first;
 			m_discTotal = discPair.second;

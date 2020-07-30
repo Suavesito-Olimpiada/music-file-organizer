@@ -3,7 +3,7 @@ DESTDIR ?=
 BINDIR ?= $(PREFIX)/bin
 
 LDLIBS += $(shell pkg-config --libs taglib icu-i18n)
-CXXFLAGS ?= -O3 -pipe -fomit-frame-pointer -march=native
+CXXFLAGS ?= -O3 -pipe -march=native
 CXXFLAGS += $(shell pkg-config --cflags taglib icu-i18n)
 
 .PHONY: clean install
