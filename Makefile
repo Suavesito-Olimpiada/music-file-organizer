@@ -11,11 +11,12 @@ CXXFLAGS += $(shell pkg-config --cflags taglib)
 BINARIES := readmusictags organizemusic displaylibrary
 all: $(BINARIES)
 
-readmusictags: AudioFile.cpp AudioFile.h readmusictags.cpp
+readmusictags:
 organizemusic: CXXFLAGS += $(shell pkg-config --cflags icu-i18n)
 organizemusic: LDLIBS += $(shell pkg-config --libs icu-i18n)
-organizemusic: AudioFile.cpp AudioFile.h organizemusic.cpp
-displaylibrary: AudioFile.cpp AudioFile.h displaylibrary.cpp
+organizemusic:
+displaylibrary:
+$(BINARIES): AudioFile.cpp
 
 install: $(BINARIES)
 	@mkdir -p "$(DESTDIR)$(BINDIR)"
